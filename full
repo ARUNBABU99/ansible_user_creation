@@ -1,0 +1,70 @@
+playbook
+
+- name: "Create multiple users from a file"
+  hosts: localhost
+  connection: local
+  become: true
+  vars_files:
+    - users.yml
+  tasks:
+    - name: "Adding Users"
+      user:
+        name: "{{ item.name }}"
+        create_home: yes
+        password: "{{ lookup('password', 'credentials/' + item.name + '/password.txt length=20 chars=ascii_letters')}}"
+        generate_ssh_key: yes
+        ssh_key_bits: 2048
+        ssh_key_file: .ssh/{{ item.name }}
+        ssh_key_passphrase: "{{ lookup('password', 'credentials/' + item.name + '/passphrase.txt length=20 chars=ascii_letters')}}"
+      register: useradd_complete
+      with_items: "{{ users }}"
+    - name: execute install script
+      command: python3  shell.py3
+      register: current_config
+    - debug: msg="{{ current_config.stdout_lines }}"
+    - name: write config to local file
+      local_action:
+          module: copy
+          content: "{{ current_config.stdout_lines|join('\n')}}"
+          dest: test.txt
+
+
+
+
+
+
+
+
+
+
+
+
+
+Script
+
+#!//usr/local/bin/python3
+import yaml
+import os
+
+with open("users.yml") as file:
+    # parse the YAML file
+    data = yaml.safe_load(file)
+    users = data['users']
+    for user in users:
+        x=(user["name"])
+        print("name" , x)
+        a_path = "credentials"
+        a_file = "password.txt"
+        joined_path = os.path.join(a_path, x , a_file)
+        f= open(f"{joined_path}", 'r')
+        content = f. read().rstrip()
+        print("pasword is" , content)
+        a_path = "credentials"
+        a_file = "passphrase.txt"
+        joined_path = os.path.join(a_path, x , a_file)
+        f= open(f"{joined_path}", 'r')
+        content = f. read().rstrip()
+        print("passphrase is" , content)
+        print("\n")
+        print("\n")
+

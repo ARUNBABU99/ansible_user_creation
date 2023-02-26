@@ -1,0 +1,9 @@
+- name: Update web servers
+  hosts: localhost
+  remote_user: root
+  become: yes
+
+  tasks:
+  - name: installing apt package
+    ansible.builtin.apt:
+      name: foo

@@ -1,0 +1,10 @@
+name xxy
+pasword is oLZaFqWSSuGUwdYQPAfL
+passphrase is NmYPMMMtOWUqCUBjsCAX
+
+
+
+
+name yyy
+pasword is mVPnJQwXmaCdQxPnNlgV
+passphrase is sOZwDRYMOdNJHnuNDDws
