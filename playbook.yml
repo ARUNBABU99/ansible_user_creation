@@ -1,6 +1,6 @@
 - name: "Create multiple users from a file"
-  hosts: localhost
-  connection: local
+  hosts: test
+  # connection: local
   become: true
   vars_files:
     - users.yml
@@ -9,7 +9,7 @@
       user:
         name: "{{ item.name }}"
         create_home: yes
-        password: "{{ lookup('password', 'credentials/' + item.name + '/password.txt length=20 chars=ascii_letters')}}"
+        password: "{{ lookup('password', 'credentials/' + item.name + '/password.txt length=20 chars=ascii_letters') | password_hash('sha512', 65534)}}"
         state: present
         generate_ssh_key: yes
         ssh_key_bits: 2048
@@ -18,7 +18,9 @@
       register: useradd_complete
       with_items: "{{ users }}"
     - name: execute install script
-      command: python3  shell.py3
+      local_action:
+        module: command
+        cmd: python3 shell.py3
       register: current_config
     - debug: msg="{{ current_config.stdout_lines }}"
     - name: write config to local file
